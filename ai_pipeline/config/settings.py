@@ -28,9 +28,9 @@ SIGNATURE_CROP_DIR = os.path.join(OUTPUT_DIR, 'output_detection', 'signature')
 STAMP_CROP_DIR = os.path.join(OUTPUT_DIR, 'output_detection', 'stamp')
 
 OUTPUT_SEGMENTATION_DIR = os.path.join(OUTPUT_DIR, 'output_segmentation')
-MASK_OVERLAY_DIR = os.path.join(OUTPUT_SEGMENTATION_DIR, 'output_segmentation', 'masks_overlay')
-MASK_SIGNATURE_DIR = os.path.join(OUTPUT_SEGMENTATION_DIR, 'output_segmentation', 'masks_signature')
-MASK_STAMP_DIR = os.path.join(OUTPUT_SEGMENTATION_DIR, 'output_segmentation', 'masks_stamp')
+MASK_OVERLAY_DIR = os.path.join(OUTPUT_SEGMENTATION_DIR, 'masks_overlay')
+MASK_SIGNATURE_DIR = os.path.join(OUTPUT_SEGMENTATION_DIR,  'masks_signature')
+MASK_STAMP_DIR = os.path.join(OUTPUT_SEGMENTATION_DIR, 'masks_stamp')
 
 # Tham số
 DOC_IMG_SIZE = (640, 640)

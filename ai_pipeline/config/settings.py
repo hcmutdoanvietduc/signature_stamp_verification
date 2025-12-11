@@ -15,6 +15,8 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 INPUT_DOC_DIR = os.path.join(DATA_DIR, 'input_documents')
 DB_SIGNATURE_DIR = os.path.join(DATA_DIR, 'db_signatures')
 DB_STAMP_DIR = os.path.join(DATA_DIR, 'db_stamps')
+INPUT_SIGNATURE_DIR = os.path.join(DATA_DIR, 'input_signatures')
+
 OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
 
 # Các thư mục con trong Output

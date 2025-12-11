@@ -5,7 +5,7 @@ from config.settings import *
 from src.preprocessing import *
 from src.detection import *
 from src.segmentation import *
-# from src.validation import *
+from src.validation import *
 from src.utils import *
 
 def setup_dirs():
@@ -43,82 +43,84 @@ def main():
         print("No input documents found.")
         return
 
-    # 1. Tiền xử lí văn bản
-    print("Preprocessing documents...")
+    # # 1. Tiền xử lí văn bản
+    # print("Preprocessing documents...")
 
-    batch_preprocess_documents(
-        input_folder=INPUT_DOC_DIR,
-        output_folder=PREPROCESSED_DOC_DIR,
-        size=DOC_IMG_SIZE,
-        deskew_threshold=8.0
-    )
-
-    # 2. Tiền xử lí CSDL chữ kí và con dấu
-    # print("Preprocessing signature and stamp databases...")
-
-    # create_masks(
-    #     input_dir=DB_SIGNATURE_DIR,
-    #     output_dir=PREPROCESSED_SIGNATURE_DIR,
-    #     output_size=MASK_SIZE,
-    #     min_component_size=15
+    # batch_preprocess_documents(
+    #     input_folder=INPUT_DOC_DIR,
+    #     output_folder=PREPROCESSED_DOC_DIR,
+    #     size=DOC_IMG_SIZE,
+    #     deskew_threshold=8.0
     # )
 
-    # create_masks(
-    #     input_dir=DB_STAMP_DIR,
-    #     output_dir=PREPROCESSED_STAMP_DIR,
-    #     output_size=MASK_SIZE,
-    #     min_component_size=15
-    # )
+    # # 2. Tiền xử lí CSDL chữ kí và con dấu
+    # # print("Preprocessing signature and stamp databases...")
 
-    # 3. Phát hiện chữ kí và con dấu trong văn bản
-    print("Detecting signatures and stamps in documents...")
+    # # create_masks(
+    # #     input_dir=DB_SIGNATURE_DIR,
+    # #     output_dir=PREPROCESSED_SIGNATURE_DIR,
+    # #     output_size=MASK_SIZE,
+    # #     min_component_size=15
+    # # )
 
-    for i in range(len(input_files)):
-        detect_and_crop(
-            input_image_path=os.path.join(PREPROCESSED_DOC_DIR, input_files[i]),
-            overlay_dir=OVERLAY_CROP_DIR,
-            stamp_dir=STAMP_CROP_DIR,
-            signature_dir=SIGNATURE_CROP_DIR,
-            model_path=YOLO_MODEL_PATH
-        )
+    # # create_masks(
+    # #     input_dir=DB_STAMP_DIR,
+    # #     output_dir=PREPROCESSED_STAMP_DIR,
+    # #     output_size=MASK_SIZE,
+    # #     min_component_size=15
+    # # )
+
+    # # 3. Phát hiện chữ kí và con dấu trong văn bản
+    # print("Detecting signatures and stamps in documents...")
+
+    # for i in range(len(input_files)):
+    #     detect_and_crop(
+    #         input_image_path=os.path.join(PREPROCESSED_DOC_DIR, input_files[i]),
+    #         overlay_dir=OVERLAY_CROP_DIR,
+    #         stamp_dir=STAMP_CROP_DIR,
+    #         signature_dir=SIGNATURE_CROP_DIR,
+    #         model_path=YOLO_MODEL_PATH
+    #     )
     
-    # 4a. Dự đoán ảnh mask của vùng chồng lấn
-    print("Predicting overlay masks...")
+    # # 4a. Dự đoán ảnh mask của vùng chồng lấn
+    # print("Predicting overlay masks...")
 
-    predict_overlay_images_into_masks(
-        overlay_dir=OVERLAY_CROP_DIR,
-        model_path=UNET_MODEL_PATH,
-        output_dir=MASK_OVERLAY_DIR
-    )
+    # predict_overlay_images_into_masks(
+    #     overlay_dir=OVERLAY_CROP_DIR,
+    #     model_path=UNET_MODEL_PATH,
+    #     output_dir=MASK_OVERLAY_DIR
+    # )
 
-    # 4b. Phân tách chữ kí và con dấu từ ảnh chồng lấn sử dụng ảnh mask
-    print("Segmenting signatures and stamps from overlay masks...")
+    # # 4b. Phân tách chữ kí và con dấu từ ảnh chồng lấn sử dụng ảnh mask
+    # print("Segmenting signatures and stamps from overlay masks...")
 
-    signature_stamp_segmentation(
-        overlay_mask_dir=MASK_OVERLAY_DIR,
-        output_signature_dir=MASK_SIGNATURE_DIR,
-        output_stamp_dir=MASK_STAMP_DIR
-    )
+    # signature_stamp_segmentation(
+    #     overlay_mask_dir=MASK_OVERLAY_DIR,
+    #     output_signature_dir=MASK_SIGNATURE_DIR,
+    #     output_stamp_dir=MASK_STAMP_DIR
+    # )
 
-    # 4c. Chuyển đổi vùng chữ kí/con dấu riêng biệt sang ảnh mask
-    print("Generating specific signature and stamp masks...")
+    # # 4c. Chuyển đổi vùng chữ kí/con dấu riêng biệt sang ảnh mask
+    # print("Generating specific signature and stamp masks...")
 
-    create_masks(
-        input_dir=SIGNATURE_CROP_DIR,
-        output_dir=MASK_SIGNATURE_DIR,
-        output_size=MASK_SIZE,
-        min_component_size=15
-    )
+    # create_masks(
+    #     input_dir=SIGNATURE_CROP_DIR,
+    #     output_dir=MASK_SIGNATURE_DIR,
+    #     output_size=MASK_SIZE,
+    #     min_component_size=15
+    # )
 
-    create_masks(
-        input_dir=STAMP_CROP_DIR,
-        output_dir=MASK_STAMP_DIR,
-        output_size=MASK_SIZE,
-        min_component_size=15
-    )
+    # create_masks(
+    #     input_dir=STAMP_CROP_DIR,
+    #     output_dir=MASK_STAMP_DIR,
+    #     output_size=MASK_SIZE,
+    #     min_component_size=15
+    # )
 
     # 5. Xác thực chữ kí và con dấu có trong CSDL hay không
     print("Validating signatures and stamps...")
+    result = compare_test_folder_with_db(model_path=SIAMESE_MODEL_PATH, test_root=INPUT_SIGNATURE_DIR, db_root=DB_SIGNATURE_DIR)
+    print(result)
     
     print("\n--- Pipeline Completed ---")
 

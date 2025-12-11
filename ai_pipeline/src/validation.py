@@ -76,15 +76,16 @@ import os
 
 def compare_with_db(model_path, input_img_path, db_root):
     """
-    So sánh 1 ảnh (input_img_path) với tất cả folder trong db_root.
-    Trả về True nếu trùng (same_person == True) với ít nhất 1 folder trong DB.
+    So sánh 1 ảnh (input_img_path) với toàn bộ DB (db_root: nhiều folder con).
+    Trả về:
+        - mã thư mục (vd: '01', 'A03', ...) nếu khớp với 1 người trong DB
+        - None nếu không khớp ai
     """
-    for subfolder in os.listdir(db_root):
+    for subfolder in sorted(os.listdir(db_root)):
         subfolder_path = os.path.join(db_root, subfolder)
         if not os.path.isdir(subfolder_path):
             continue
 
-        # Lấy 1 ảnh bất kỳ trong folder con
         img_files = [
             f for f in os.listdir(subfolder_path)
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
@@ -92,55 +93,41 @@ def compare_with_db(model_path, input_img_path, db_root):
         if not img_files:
             continue
 
-        img_path = os.path.join(subfolder_path, img_files[0])
+        # có thể lặp hết img_files; ở đây demo dùng từng file
+        for img_name in img_files:
+            db_img_path = os.path.join(subfolder_path, img_name)
 
-        # Gọi hàm same_person(model, query_img, db_img)
-        score = same_person(model_path, input_img_path, img_path)
+            # same_person(model_path, query, candidate) -> True/False
+            is_same = same_person(model_path, input_img_path, db_img_path)
 
-        # Nếu khớp với 1 signer trong DB là đủ
-        if score:
-            return True
+            if is_same:
+                # input_img thuộc về signer / stamp có id = subfolder
+                return subfolder
 
-    return False
+    # không ai khớp trong DB
+    return None
 
-import os
-
-def compare_test_folder_with_db(model_path, test_root, db_root):
+def compare_test_folder_with_db(model_path, mask_folder, db_root):
     """
-    test_root: folder chứa ảnh test (bây giờ là dạng flat: 01_1_in_db.jpg, ...)
+    mask_folder: folder chứa mask sau khi đã segmentation (bây giờ là dạng flat: 01_1_in_db.jpg, ...)
     db_root:   folder DB, vẫn dạng nhiều folder con theo signer
     """
     results = {}
 
-    for entry in os.listdir(test_root):
-        entry_path = os.path.join(test_root, entry)
-
-        # case 1: flat structure -> entry is a file
-        if os.path.isfile(entry_path):
-            if not entry.lower().endswith((".png", ".jpg", ".jpeg")):
-                continue
-            input_img_path = entry_path
-            key = os.path.splitext(entry)[0]  # "01_1_in_db"
-        
-        # case 2: vẫn còn trường hợp có folder con (old style)
-        elif os.path.isdir(entry_path):
-            img_files = [
-                f for f in os.listdir(entry_path)
-                if f.lower().endswith((".png", ".jpg", ".jpeg"))
-            ]
-            if not img_files:
-                continue
-            input_img_path = os.path.join(entry_path, img_files[0])
-            key = entry  # folder name
-
-        else:
+    for fname in os.listdir(mask_folder):
+        if not fname.lower().endswith((".png", ".jpg", ".jpeg")):
             continue
 
-        # So sánh ảnh này với toàn bộ DB
-        is_in_db = compare_with_db(model_path, input_img_path, db_root)
-        results[key] = is_in_db
+        input_img_path = os.path.join(mask_folder, fname)
+        owner_id = compare_with_db(model_path, input_img_path, db_root)
 
-        print(f"{key}: {'IN_DB' if is_in_db else 'NOT_IN_DB'}")
+        results[fname] = owner_id
+        if owner_id is None:
+            print(f"{fname} -> UNKNOWN")
+        else:
+            print(f"{fname} -> {owner_id}")
+
+    return results
 
     return results
 

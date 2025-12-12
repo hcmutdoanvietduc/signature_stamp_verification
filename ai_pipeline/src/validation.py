@@ -6,7 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
 
-class SignatureEmbeddingNet(nn.Module):
+class EmbeddingNet(nn.Module):
     def __init__(self, emb_dim=128):
         super().__init__()
         self.features = nn.Sequential(
@@ -37,7 +37,7 @@ class SignatureEmbeddingNet(nn.Module):
 class SiameseNet(nn.Module):
     def __init__(self, emb_dim=128):
         super().__init__()
-        self.embedding = SignatureEmbeddingNet(emb_dim)
+        self.embedding = EmbeddingNet(emb_dim)
         self.classifier = nn.Sequential(
             nn.Linear(emb_dim, 64),
             nn.ReLU(),
@@ -126,8 +126,6 @@ def compare_test_folder_with_db(model_path, mask_folder, db_root):
             print(f"{fname} -> UNKNOWN")
         else:
             print(f"{fname} -> {owner_id}")
-
-    return results
 
     return results
 

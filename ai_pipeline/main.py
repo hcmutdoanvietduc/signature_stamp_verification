@@ -5,7 +5,7 @@ from config.settings import *
 from src.preprocessing import *
 from src.detection import *
 from src.segmentation import *
-# from src.validation import *
+from src.validation import *
 from src.utils import *
 
 def setup_dirs():
@@ -119,6 +119,8 @@ def main():
 
     # 5. Xác thực chữ kí và con dấu có trong CSDL hay không
     print("Validating signatures and stamps...")
+    compare_test_folder_with_db(model_path=SIAMESE_MODEL_PATH, mask_folder=MASK_SIGNATURE_DIR, db_root=DB_SIGNATURE_DIR)
+    compare_test_folder_with_db(model_path=SIAMESE_MODEL_PATH, mask_folder=MASK_STAMP_DIR, db_root=DB_STAMP_DIR)
     
     print("\n--- Pipeline Completed ---")
 

@@ -35,7 +35,7 @@ def preprocess_document_image(input_path, output_path,
                               deskew_threshold=5.0):
     image = cv2.imread(input_path)
     if image is None:
-        print(f"⚠️  Không đọc được ảnh: {input_path}")
+        print(f"Không đọc được ảnh: {input_path}")
         return None
 
     # --- Deskew ---
@@ -70,7 +70,29 @@ def preprocess_document_image(input_path, output_path,
 
     return output_jpg
 
-# Create binary masks from signature/stamp images
+# Create binary masks for databases of signature/stamp
+def create_database_masks(input_dir, output_dir,
+                          output_size=(128, 128),
+                          min_component_size=20):
+    if not os.path.exists(input_dir):
+        print(f"Input directory not found: {input_dir}")
+        return
+
+    subdirs = [d for d in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, d))]
+    
+    if not subdirs:
+        print(f"No subdirectories found in {input_dir}")
+        return
+
+    for subdir in subdirs:
+        sub_input_path = os.path.join(input_dir, subdir)
+        sub_output_path = os.path.join(output_dir, subdir)
+        
+        os.makedirs(sub_output_path, exist_ok=True)
+        
+        create_masks(sub_input_path, sub_output_path, output_size, min_component_size)
+        
+# Create binary masks for folders of signature/stamp
 def create_masks(input_dir, output_dir, output_size=(128, 128), min_component_size=20):
     image_files = [f for f in os.listdir(input_dir) if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp"))]
 
@@ -98,3 +120,4 @@ def create_masks(input_dir, output_dir, output_size=(128, 128), min_component_si
         mask_name = os.path.splitext(img_file)[0] + ".png"
         mask_path = os.path.join(output_dir, mask_name)
         cv2.imwrite(mask_path, mask_resized)
+    

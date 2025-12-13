@@ -54,21 +54,21 @@ def main():
     )
 
     # 2. Tiền xử lí CSDL chữ kí và con dấu
-    # print("Preprocessing signature and stamp databases...")
+    print("Preprocessing signature and stamp databases...")
 
-    # create_masks(
-    #     input_dir=DB_SIGNATURE_DIR,
-    #     output_dir=PREPROCESSED_SIGNATURE_DIR,
-    #     output_size=MASK_SIZE,
-    #     min_component_size=15
-    # )
+    create_database_masks(
+        input_dir=DB_SIGNATURE_DIR,
+        output_dir=PREPROCESSED_SIGNATURE_DIR,
+        output_size=MASK_SIZE,
+        min_component_size=15
+    )
 
-    # create_masks(
-    #     input_dir=DB_STAMP_DIR,
-    #     output_dir=PREPROCESSED_STAMP_DIR,
-    #     output_size=MASK_SIZE,
-    #     min_component_size=15
-    # )
+    create_database_masks(
+        input_dir=DB_STAMP_DIR,
+        output_dir=PREPROCESSED_STAMP_DIR,
+        output_size=MASK_SIZE,
+        min_component_size=15
+    )
 
     # 3. Phát hiện chữ kí và con dấu trong văn bản
     print("Detecting signatures and stamps in documents...")
